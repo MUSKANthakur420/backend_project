@@ -29,7 +29,7 @@ import { app } from "./app.js";
 // dotenv.config() use directly dotenv/config or this method after importing dotnev
 // const app = express();
 
-connect_db({path:'./env'})
+connect_db({path:'./.env'})
 .then(()=>{
     app.on("errror",()=>{
         console.log("Error : ",error);
