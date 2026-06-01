@@ -1,27 +1,42 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 
+// 🔴 Safety check (very important)
+if (
+  !process.env.CLOUDINARY_CLOUD_NAME ||
+  !process.env.CLOUDINARY_API_KEY ||
+  !process.env.CLOUDINARY_API_SECRET
+) {
+  throw new Error(
+    "❌ Cloudinary ENV missing. Check .env loading order or variable names."
+  );
+}
+
+// ✅ Cloudinary configuration
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// 📤 Upload file to Cloudinary
 const uploadFileOnCloudinary = async (localFilePath) => {
   if (!localFilePath) return null;
 
   try {
     const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto",
+      resource_type: "auto", // image / video / pdf
       folder: "users",
     });
 
+    // 🧹 delete local temp file
     fs.unlink(localFilePath, (err) => {
       if (err) console.error("Failed to delete temp file:", err);
     });
 
     return response;
   } catch (error) {
+    // 🧹 cleanup even on failure
     fs.unlink(localFilePath, (err) => {
       if (err) console.error("Failed to delete temp file:", err);
     });
@@ -30,10 +45,8 @@ const uploadFileOnCloudinary = async (localFilePath) => {
   }
 };
 
-const deleteFromCloudinary = async (
-  publicId,
-  resourceType = "image"
-) => {
+// 🗑️ Delete file from Cloudinary
+const deleteFromCloudinary = async (publicId, resourceType = "image") => {
   if (!publicId) return null;
 
   try {
@@ -45,7 +58,4 @@ const deleteFromCloudinary = async (
   }
 };
 
-export {
-  uploadFileOnCloudinary,
-  deleteFromCloudinary,
-};
+export { uploadFileOnCloudinary, deleteFromCloudinary };

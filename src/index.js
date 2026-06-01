@@ -23,11 +23,10 @@
    //if changes occur in .env file then we have to restart the server again no other choices
    
 //    dotenv.config({ path: "./env" }); // OR "./.env"
-import dotenv from "dotenv";
-dotenv.config({ debug: true });
-   import express from "express";
-   import connect_db from "./db/index.js";
-   import { app } from "./app.js";
+
+import "./config/env.js";   // 👈 MUST BE FIRST
+import { app } from "./app.js";
+import connect_db from "./db/index.js";
    
    connect_db()
      .then(() => {
