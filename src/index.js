@@ -22,23 +22,24 @@
 
    //if changes occur in .env file then we have to restart the server again no other choices
    
-import dotenv from "dotenv/config";
-import express from "express";
-import connect_db from "./db/index.js";
-import { app } from "./app.js";
-// dotenv.config() use directly dotenv/config or this method after importing dotnev
-// const app = express();
-
-connect_db({path:'./.env'})
-.then(()=>{
-    app.on("errror",()=>{
-        console.log("Error : ",error);
-        throw error;
+//    dotenv.config({ path: "./env" }); // OR "./.env"
+import dotenv from "dotenv";
+dotenv.config({ debug: true });
+   import express from "express";
+   import connect_db from "./db/index.js";
+   import { app } from "./app.js";
+   
+   connect_db()
+     .then(() => {
+       app.on("error", (error) => {
+         console.log("Error:", error);
+         throw error;
+       });
+   
+       app.listen(process.env.PORT || 8000, () => {
+         console.log(`SERVER IS RUNNING AT PORT ${process.env.PORT || 8000}`);
+       });
+     })
+     .catch((err) => {
+       console.log("Mongo DB connection failed", err);
      });
-app.listen(process.env.PORT || 8000,()=>{
-    console.log(`SERVER IS RUNNING AT PORT ${process.env.PORT}`)
-});
-})
-.catch((err)=>{
-    console.log("Mongo DB connection failed",err);
-})

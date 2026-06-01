@@ -7,27 +7,21 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-// Upload file
 const uploadFileOnCloudinary = async (localFilePath) => {
   if (!localFilePath) return null;
 
   try {
-    console.log("Uploading file to Cloudinary:", localFilePath);
-
     const response = await cloudinary.uploader.upload(localFilePath, {
       resource_type: "auto",
       folder: "users",
     });
 
-    // Delete temp file after upload
     fs.unlink(localFilePath, (err) => {
       if (err) console.error("Failed to delete temp file:", err);
     });
 
     return response;
   } catch (error) {
-    console.error("Cloudinary upload failed:", error);
-
     fs.unlink(localFilePath, (err) => {
       if (err) console.error("Failed to delete temp file:", err);
     });
@@ -36,7 +30,6 @@ const uploadFileOnCloudinary = async (localFilePath) => {
   }
 };
 
-// Delete file
 const deleteFromCloudinary = async (
   publicId,
   resourceType = "image"
@@ -44,15 +37,10 @@ const deleteFromCloudinary = async (
   if (!publicId) return null;
 
   try {
-    const response = await cloudinary.uploader.destroy(publicId, {
+    return await cloudinary.uploader.destroy(publicId, {
       resource_type: resourceType,
     });
-
-    console.log("Cloudinary delete success:", response);
-
-    return response;
   } catch (error) {
-    console.error("Cloudinary delete failed:", error);
     throw new Error("Cloudinary delete failed: " + error.message);
   }
 };
