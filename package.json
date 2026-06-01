@@ -6,9 +6,10 @@
   "author": "Muskan Singh",
   "type": "module",
   "main": "index.js",
-  "scripts": {
-    "dev": "nodemon --experimental-json-modules src/index.js"
-  },
+"scripts": {
+  "start": "node src/index.js",
+  "dev": "nodemon --experimental-json-modules src/index.js"
+},
   "devDependencies": {
     "prettier": "^3.8.1"
   },
