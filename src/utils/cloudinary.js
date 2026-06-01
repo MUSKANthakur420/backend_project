@@ -1,12 +1,13 @@
 import { v2 as cloudinary } from "cloudinary";
 import fs from "fs";
 
-cloudinary.config({ 
+cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
+// Upload file
 const uploadFileOnCloudinary = async (localFilePath) => {
   if (!localFilePath) return null;
 
@@ -14,13 +15,11 @@ const uploadFileOnCloudinary = async (localFilePath) => {
     console.log("Uploading file to Cloudinary:", localFilePath);
 
     const response = await cloudinary.uploader.upload(localFilePath, {
-      resource_type: "auto", // handles image, video, etc.
-      folder: "users",       // optional: organize files in a folder
+      resource_type: "auto",
+      folder: "users",
     });
 
-    // console.log("File uploaded successfully:", response.url);
-
-    // delete temp file after upload
+    // Delete temp file after upload
     fs.unlink(localFilePath, (err) => {
       if (err) console.error("Failed to delete temp file:", err);
     });
@@ -29,7 +28,6 @@ const uploadFileOnCloudinary = async (localFilePath) => {
   } catch (error) {
     console.error("Cloudinary upload failed:", error);
 
-    // attempt to delete temp file safely
     fs.unlink(localFilePath, (err) => {
       if (err) console.error("Failed to delete temp file:", err);
     });
@@ -38,4 +36,28 @@ const uploadFileOnCloudinary = async (localFilePath) => {
   }
 };
 
-export { uploadFileOnCloudinary };
+// Delete file
+const deleteFromCloudinary = async (
+  publicId,
+  resourceType = "image"
+) => {
+  if (!publicId) return null;
+
+  try {
+    const response = await cloudinary.uploader.destroy(publicId, {
+      resource_type: resourceType,
+    });
+
+    console.log("Cloudinary delete success:", response);
+
+    return response;
+  } catch (error) {
+    console.error("Cloudinary delete failed:", error);
+    throw new Error("Cloudinary delete failed: " + error.message);
+  }
+};
+
+export {
+  uploadFileOnCloudinary,
+  deleteFromCloudinary,
+};
